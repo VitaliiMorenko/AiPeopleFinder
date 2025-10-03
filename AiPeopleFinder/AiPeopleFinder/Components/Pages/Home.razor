@@ -1,0 +1,21 @@
+﻿@rendermode InteractiveServer
+@page "/"
+@using AiPeopleFinder.Application
+
+@inject IPeopleFinderService peopleFinderService
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world!</h1>
+<button @onclick="Run">Start</button>
+
+Welcome to your new app.
+
+@code
+{
+    async Task Run()
+    {
+        var result = await peopleFinderService.GetSearchRequestDetails("vmorenko@gmail.com");
+        Console.WriteLine(result);
+    }
+}
