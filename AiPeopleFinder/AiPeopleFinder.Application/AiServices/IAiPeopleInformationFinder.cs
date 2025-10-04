@@ -1,6 +1,8 @@
-﻿namespace AiPeopleFinder.Application.AiServices;
+﻿using AiPeopleFinder.Domain;
+
+namespace AiPeopleFinder.Application.AiServices;
 
 public interface IAiPeopleInformationFinder
 {
-    Task<string> SearchInformation(string searchTerm);
+    Task<PersonProfile?> SearchInformation(string searchTerm);
 }

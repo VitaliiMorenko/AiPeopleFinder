@@ -21,4 +21,5 @@ services:
       - mongodb
     environment:
       MongoDB__ConnectionString: "mongodb://admin:admin@mongodb:27017/AiPeopleFinder?authSource=admin"
+      OPENAI_API_KEY: "${OPENAI_API_KEY}"
       ASPNETCORE_URLS: "http://+:80" 
