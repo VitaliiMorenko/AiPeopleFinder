@@ -6,4 +6,5 @@ public interface ISearchRequestDetailsRepository
 {
     Task CreateOrUpdate(SearchRequestDetails details);
     Task<SearchRequestDetails?> GetBySearchTerm(string searchTerm);
+    Task<List<string>> GetSearchTermSuggestions(string searchTerm, int limit);
 }

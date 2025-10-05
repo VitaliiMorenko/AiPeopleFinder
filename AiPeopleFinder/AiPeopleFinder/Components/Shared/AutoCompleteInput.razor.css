@@ -1,0 +1,12 @@
+﻿.ac-wrap { position: relative; display: inline-block; width: 100%; max-width: 520px; }
+.ac-input { width: 100%; padding: .55rem .7rem; border: 1px solid #ccc; border-radius: 10px; }
+.ac-list { position: absolute; z-index: 1000; left: 0; right: 0; margin: 4px 0 0; padding: 6px 0;
+    border: 1px solid #ddd; border-radius: 10px; background: #fff; box-shadow: 0 6px 18px rgba(0,0,0,.08);
+    max-height: 280px; overflow-y: auto; }
+.ac-item { padding: .45rem .7rem; cursor: pointer; }
+.ac-item:hover, .ac-item.is-active { background: #f3f4f6; }
+@media (prefers-color-scheme: dark){
+    .ac-input{ border-color:#444; background:#111; color:#eee; }
+    .ac-list{ border-color:#333; background:#0f0f0f; }
+    .ac-item:hover, .ac-item.is-active{ background:#1f2937; }
+}

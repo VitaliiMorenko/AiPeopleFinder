@@ -1,0 +1,136 @@
+﻿<div class="ac-wrap" @onkeydown="OnKeyDown">
+    <input class="ac-input"
+           placeholder="@Placeholder"
+           @bind="Text"
+           @bind:event="oninput"
+           @onfocus="() => IsOpen = Suggestions.Count > 0"
+           @onblur="Close"/>
+    @if (IsOpen && Suggestions.Count > 0)
+    {
+        <ul class="ac-list">
+            @for (var i = 0; i < Suggestions.Count; i++)
+            {
+                var item = Suggestions[i];
+                <li class="ac-item @(i == HighlightedIndex ? "is-active" : null)"
+                    @onmousedown="() => Pick(item)">
+                    @item
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    [Parameter] public string? Placeholder { get; set; } = "";
+    [Parameter] public int MinChars { get; set; } = 2;
+    [Parameter] public int Limit { get; set; } = 8;
+    [Parameter] public int ThrottleMs { get; set; } = 250;
+    
+    [Parameter, EditorRequired]
+    public Func<string, int, Task<List<string>>> Provider { get; set; } = default!;
+    
+    private string _text = "";
+    [Parameter] public string Text { get => _text; set { if (_text != value) { _text = value; _ = OnTextChanged(); } } }
+    [Parameter] public EventCallback<string> TextChanged { get; set; }
+
+    private List<string> Suggestions { get; set; } = new();
+    private int HighlightedIndex { get; set; } = -1;
+    private bool IsOpen { get; set; }
+    
+    private DateTime _lastQueryAt = DateTime.MinValue;
+    private bool _suppressFetch;
+
+    private async Task OnTextChanged()
+    {
+        await TextChanged.InvokeAsync(Text);
+
+        if (_suppressFetch)
+            return;
+        
+        if (string.IsNullOrWhiteSpace(Text) || Text.Trim().Length < MinChars)
+        {
+            IsOpen = false;
+            Suggestions.Clear();
+            HighlightedIndex = -1;
+            StateHasChanged();
+            return;
+        }
+
+        try
+        {
+            await Task.Delay(ThrottleMs);
+
+            var queryStarted = DateTime.UtcNow;
+            var items = await Provider(Text.Trim(), Limit);
+            
+            if (queryStarted < _lastQueryAt) return;
+            _lastQueryAt = queryStarted;
+
+            Suggestions = items ?? new();
+            HighlightedIndex = Suggestions.Count > 0 ? 0 : -1;
+            IsOpen = Suggestions.Count > 0;
+            StateHasChanged();
+        }
+        catch (TaskCanceledException) { }
+    }
+
+    private void OnKeyDown(KeyboardEventArgs e)
+    {
+        if (!IsOpen && (e.Key == "ArrowDown" || e.Key == "ArrowUp"))
+        {
+            if (Suggestions.Count == 0) return;
+            IsOpen = true;
+            HighlightedIndex = Math.Clamp(HighlightedIndex, 0, Suggestions.Count - 1);
+            StateHasChanged();
+            return;
+        }
+
+        switch (e.Key)
+        {
+            case "ArrowDown":
+                if (Suggestions.Count > 0)
+                {
+                    HighlightedIndex = (HighlightedIndex + 1) % Suggestions.Count;
+                    StateHasChanged();
+                }
+                break;
+            case "ArrowUp":
+                if (Suggestions.Count > 0)
+                {
+                    HighlightedIndex = (HighlightedIndex - 1 + Suggestions.Count) % Suggestions.Count;
+                    StateHasChanged();
+                }
+                break;
+            case "Enter":
+                if (IsOpen && HighlightedIndex >= 0 && HighlightedIndex < Suggestions.Count)
+                    Pick(Suggestions[HighlightedIndex]);
+                break;
+            case "Escape":
+                Close();
+                break;
+        }
+    }
+
+    private async Task Pick(string value)
+    {
+        _suppressFetch = true;
+        try
+        {
+            Text = value;
+            Close();
+            await TextChanged.InvokeAsync(Text);
+        }
+        finally
+        {
+            _suppressFetch = false;
+        }
+    }
+    
+    private void Close()
+    {
+        IsOpen = false;
+        Suggestions.Clear();
+        HighlightedIndex = -1;
+        StateHasChanged();
+    }
+}

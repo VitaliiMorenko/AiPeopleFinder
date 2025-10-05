@@ -62,6 +62,29 @@ public class SearchRequestDetailsRepository : ISearchRequestDetailsRepository
         };
     }
 
+    public async Task<List<string>> GetSearchTermSuggestions(string searchTerm, int limit)
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm))
+            return [];
+
+        var term = GetIdFromSearchTerm(searchTerm);
+        
+        var filter = Builders<SearchRequestDetailsEntity>.Filter.Regex(
+            x => x.SearchTerm,
+            new MongoDB.Bson.BsonRegularExpression($"^{term}", "i"));
+        
+        var options = new FindOptions<SearchRequestDetailsEntity, string>
+        {
+            Projection = Builders<SearchRequestDetailsEntity>.Projection.Expression(x => x.SearchTerm),
+            Limit = limit
+        };
+
+        var cursor = await _collection.FindAsync(filter, options);
+        var list = await cursor.ToListAsync();
+
+        return list;
+    }
+
     private static string GetIdFromSearchTerm(string searchTerm)
     {
         return searchTerm.Trim().ToLower();

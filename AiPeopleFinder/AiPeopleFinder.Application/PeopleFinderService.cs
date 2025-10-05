@@ -28,4 +28,9 @@ public class PeopleFinderService(
         await searchRequestDetailsRepository.CreateOrUpdate(result);
         return result;
     }
+
+    public async Task<List<string>> GetSearchTermSuggestions(string searchTerm, int limit)
+    {
+        return await searchRequestDetailsRepository.GetSearchTermSuggestions(searchTerm, limit);
+    }
 }
