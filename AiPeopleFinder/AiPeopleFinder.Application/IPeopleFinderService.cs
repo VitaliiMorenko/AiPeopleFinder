@@ -4,5 +4,5 @@ namespace AiPeopleFinder.Application;
 
 public interface IPeopleFinderService
 {
-    Task<PersonProfile?> GetSearchRequestDetails(string searchTerm);
+    Task<SearchRequestDetails?> GetSearchRequestDetails(string searchTerm);
 }

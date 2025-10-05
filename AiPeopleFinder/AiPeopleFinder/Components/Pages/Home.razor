@@ -15,27 +15,27 @@
     @if (_busy)    { <div class="hint">Searching…</div> }
     @if (_error is not null) { <div class="err">@_error</div> }
 
-    @if (_result is not null)
+    @if (_personProfile is not null)
     {
         <div class="card">
-            <h3>@_result.Name</h3>
+            <h3>@_personProfile.Name</h3>
 
-            @if (!string.IsNullOrWhiteSpace(_result.Company))
-            { <p><b>Company:</b> @_result.Company</p> }
+            @if (!string.IsNullOrWhiteSpace(_personProfile.Company))
+            { <p><b>Company:</b> @_personProfile.Company</p> }
 
-            @if (!string.IsNullOrWhiteSpace(_result.CurrentRole))
-            { <p><b>Current role:</b> @_result.CurrentRole</p> }
+            @if (!string.IsNullOrWhiteSpace(_personProfile.CurrentRole))
+            { <p><b>Current role:</b> @_personProfile.CurrentRole</p> }
 
-            @if (_result.KeyFacts?.Count > 0)
+            @if (_personProfile.KeyFacts?.Count > 0)
             {
                 <p><b>Key Facts:</b></p>
                 <ul>
-                    @foreach (var fact in _result.KeyFacts) { <li>@fact</li> }
+                    @foreach (var fact in _personProfile.KeyFacts) { <li>@fact</li> }
                 </ul>
             }
 
-            @if (!string.IsNullOrWhiteSpace(_result.PastRolesCompanies))
-            { <p><b>Previous companies or roles:</b> @_result.PastRolesCompanies</p> }
+            @if (!string.IsNullOrWhiteSpace(_personProfile.PastRolesCompanies))
+            { <p><b>Previous companies or roles:</b> @_personProfile.PastRolesCompanies</p> }
         </div>
     }
 </div>
@@ -44,11 +44,11 @@
     string? _query;
     bool _busy;
     string? _error;
-    PersonProfile? _result;
+    PersonProfile? _personProfile;
 
     async Task OnSubmit()
     {
-        _error = null; _result = null;
+        _error = null; _personProfile = null;
         if (string.IsNullOrWhiteSpace(_query))
         {
             _error = "Enter query.";
@@ -58,7 +58,8 @@
         try
         {
             _busy = true;
-            _result = await PeopleFinderService.GetSearchRequestDetails(_query!);
+            var result = await PeopleFinderService.GetSearchRequestDetails(_query!);
+            _personProfile = result?.Profile;
         }
         catch (Exception ex)
         {

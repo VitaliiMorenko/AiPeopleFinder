@@ -16,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiPeopleFinder.Application"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiPeopleFinder.Infrastructure", "AiPeopleFinder.Infrastructure\AiPeopleFinder.Infrastructure.csproj", "{1D02A451-7457-4571-8DFB-0E07510CC260}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AiPeopleFinder.Application.Tests", "AiPeopleFinder.Application.Tests\AiPeopleFinder.Application.Tests.csproj", "{C454C31C-0364-4663-B88B-6E17867DF9E4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +40,10 @@ Global
 		{1D02A451-7457-4571-8DFB-0E07510CC260}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1D02A451-7457-4571-8DFB-0E07510CC260}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1D02A451-7457-4571-8DFB-0E07510CC260}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C454C31C-0364-4663-B88B-6E17867DF9E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C454C31C-0364-4663-B88B-6E17867DF9E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C454C31C-0364-4663-B88B-6E17867DF9E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C454C31C-0364-4663-B88B-6E17867DF9E4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
