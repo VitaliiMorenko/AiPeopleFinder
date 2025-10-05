@@ -3,11 +3,13 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using AiPeopleFinder.Application.AiServices;
 using AiPeopleFinder.Domain;
-using AiPeopleFinder.Infrastructure.Http;
+using AiPeopleFinder.Infrastructure.Configuration;
+using AiPeopleFinder.Infrastructure.Utilities.Http;
+using Microsoft.Extensions.Options;
 
 namespace AiPeopleFinder.Infrastructure.AiServices;
 
-public class OpenAiPeopleInformationFinder(IHttpClientFactory httpClientFactory) : IAiPeopleInformationFinder
+public class OpenAiPeopleInformationFinder(IHttpClientFactory httpClientFactory, IOptions<Config> options) : IAiPeopleInformationFinder
 {
     private static readonly JsonSerializerOptions JsonOpts = new()
     {
@@ -34,11 +36,10 @@ public class OpenAiPeopleInformationFinder(IHttpClientFactory httpClientFactory)
     }
     """;
 
-    private const string Model = "gpt-4o-mini";
-
     public async Task<PersonProfile?> SearchInformation(string searchTerm)
     {
-        var apiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY") ?? throw new InvalidOperationException("OPENAI_API_KEY is required");
+        var apiKey = options.Value.OpenAi.ApiKey;
+        var model = options.Value.OpenAi.Model;
 
         using var client = httpClientFactory.CreateHttpClient("https://api.openai.com/v1/");
         client.DefaultRequestHeaders.Authorization =
@@ -50,7 +51,7 @@ public class OpenAiPeopleInformationFinder(IHttpClientFactory httpClientFactory)
                               1) Use web_search to query: "<Name> <Email> <Company>" and variations.
                               2) Pick the best matching person by exact name + employer match.
                               3) Visit 2–4 top sources; extract CURRENT role title, responsibilities, highlights, skills, affiliations, education, and past roles.
-                              4) If conflicting info, prefer employer site > recent press > LinkedIn.
+                              4) If conflicting info, prefer LinkedIn > employer site > recent press.
                               5) Only if after >=3 distinct searches and >=2 site visits you cannot verify an item, output exactly "Not enough public info found." for that item.
                               6) Output JSON strictly by the schema. Truncate at word boundaries.
                               7) Do NOT include sources in fields, only facts.
@@ -59,7 +60,7 @@ public class OpenAiPeopleInformationFinder(IHttpClientFactory httpClientFactory)
         
         var body = new
         {
-            model = Model,
+            model,
             input = new object[]
             {
                 new { role = "system", content = new object[] { new { type = "input_text", text = systemInstruction } } },

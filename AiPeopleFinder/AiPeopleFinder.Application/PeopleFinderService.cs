@@ -10,23 +10,22 @@ public class PeopleFinderService(
     : IPeopleFinderService
 {
     
-    public async Task<SearchRequestDetails> GetSearchRequestDetails(string searchTerm)
+    public async Task<PersonProfile?> GetSearchRequestDetails(string searchTerm)
     {
-        var cachedResult = searchRequestDetailsRepository.GetBySearchTerm(searchTerm);
-        if (cachedResult?.IsCached == true)
+        var cachedResult = await searchRequestDetailsRepository.GetBySearchTerm(searchTerm);
+        if (cachedResult != null)
         {
-            return cachedResult;
+            return cachedResult.Profile;
         }
         
         var aiSearchResult = await aiPeopleInformationFinder.SearchInformation(searchTerm);
         var result = new SearchRequestDetails
         {
             SearchTerm = searchTerm,
-            Response = aiSearchResult
+            Profile = aiSearchResult
         };
-        result.MarkCached();
         
-        searchRequestDetailsRepository.Save(result);
-        return result;
+        await searchRequestDetailsRepository.CreateOrUpdate(result);
+        return result.Profile;
     }
 }

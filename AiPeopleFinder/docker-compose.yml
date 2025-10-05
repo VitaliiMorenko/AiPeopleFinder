@@ -20,6 +20,6 @@ services:
     depends_on:
       - mongodb
     environment:
-      MongoDB__ConnectionString: "mongodb://admin:admin@mongodb:27017/AiPeopleFinder?authSource=admin"
-      OPENAI_API_KEY: "${OPENAI_API_KEY}"
+      Config__MongoDB__ConnectionString: "mongodb://admin:admin@mongodb:27017/"
+      Config__OpenAi__ApiKey: "${OPENAI_API_KEY}"
       ASPNETCORE_URLS: "http://+:80" 

@@ -1,12 +1,15 @@
 using AiPeopleFinder.Application;
 using AiPeopleFinder.Components;
 using AiPeopleFinder.Infrastructure;
+using AiPeopleFinder.Infrastructure.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<Config>(builder.Configuration.GetSection("Config"));
+
 // Add services to the container.
 builder.Services
-    .AddInfrastructure()
+    .AddInfrastructure(builder.Configuration)
     .AddApplicationServices()
     .AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -22,7 +25,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 app.UseAntiforgery();
 

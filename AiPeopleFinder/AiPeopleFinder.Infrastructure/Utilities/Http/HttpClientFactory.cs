@@ -1,4 +1,4 @@
-﻿namespace AiPeopleFinder.Infrastructure.Http;
+﻿namespace AiPeopleFinder.Infrastructure.Utilities.Http;
 
 public class HttpClientFactory : IHttpClientFactory
 {

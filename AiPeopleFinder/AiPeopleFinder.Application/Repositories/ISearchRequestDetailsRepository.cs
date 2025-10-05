@@ -4,6 +4,6 @@ namespace AiPeopleFinder.Application.Repositories;
 
 public interface ISearchRequestDetailsRepository
 {
-    void Save(SearchRequestDetails details);
-    SearchRequestDetails GetBySearchTerm(string searchTerm);
+    Task CreateOrUpdate(SearchRequestDetails details);
+    Task<SearchRequestDetails?> GetBySearchTerm(string searchTerm);
 }

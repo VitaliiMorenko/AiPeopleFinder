@@ -1,21 +1,72 @@
 ﻿@rendermode InteractiveServer
 @page "/"
 @using AiPeopleFinder.Application
+@using AiPeopleFinder.Domain
+@inject IPeopleFinderService PeopleFinderService
 
-@inject IPeopleFinderService peopleFinderService
+<div class="center">
+    <h2 class="title">People Finder</h2>
 
-<PageTitle>Home</PageTitle>
+    <form class="search" @onsubmit="OnSubmit">
+        <input @bind="_query" @bind:event="oninput" placeholder="Enter email and/or name" />
+        <button type="submit" class="btn" disabled="@_busy">Find</button>
+    </form>
 
-<h1>Hello, world!</h1>
-<button @onclick="Run">Start</button>
+    @if (_busy)    { <div class="hint">Searching…</div> }
+    @if (_error is not null) { <div class="err">@_error</div> }
 
-Welcome to your new app.
-
-@code
-{
-    async Task Run()
+    @if (_result is not null)
     {
-        var result = await peopleFinderService.GetSearchRequestDetails("igorlysenko@gmail.com Igor Lysenko");
-        Console.WriteLine(result);
+        <div class="card">
+            <h3>@_result.Name</h3>
+
+            @if (!string.IsNullOrWhiteSpace(_result.Company))
+            { <p><b>Company:</b> @_result.Company</p> }
+
+            @if (!string.IsNullOrWhiteSpace(_result.CurrentRole))
+            { <p><b>Current role:</b> @_result.CurrentRole</p> }
+
+            @if (_result.KeyFacts?.Count > 0)
+            {
+                <p><b>Key Facts:</b></p>
+                <ul>
+                    @foreach (var fact in _result.KeyFacts) { <li>@fact</li> }
+                </ul>
+            }
+
+            @if (!string.IsNullOrWhiteSpace(_result.PastRolesCompanies))
+            { <p><b>Previous companies or roles:</b> @_result.PastRolesCompanies</p> }
+        </div>
+    }
+</div>
+
+@code {
+    string? _query;
+    bool _busy;
+    string? _error;
+    PersonProfile? _result;
+
+    async Task OnSubmit()
+    {
+        _error = null; _result = null;
+        if (string.IsNullOrWhiteSpace(_query))
+        {
+            _error = "Enter query.";
+            return;
+        }
+
+        try
+        {
+            _busy = true;
+            _result = await PeopleFinderService.GetSearchRequestDetails(_query!);
+        }
+        catch (Exception ex)
+        {
+            _error = ex.Message;
+        }
+        finally
+        {
+            _busy = false;
+        }
     }
 }

@@ -4,17 +4,5 @@ public class SearchRequestDetails
 {
     public string SearchTerm { get; set; }
     
-    public PersonProfile Response { get; set; }
-    
-    public bool IsCached { get; private set; }
-
-    public void MarkCached()
-    {
-        IsCached = true;
-    }
-
-    public void InvalidateCache()
-    {
-        IsCached = false;
-    }
+    public PersonProfile? Profile { get; set; }
 }
