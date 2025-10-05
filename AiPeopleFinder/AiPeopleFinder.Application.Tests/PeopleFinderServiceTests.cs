@@ -9,9 +9,9 @@ namespace AiPeopleFinder.Application.Tests;
 [TestFixture]
 public class PeopleFinderServiceTests
 {
-    private Mock<IAiPeopleInformationFinder> _aiMock = null!;
-        private Mock<ISearchRequestDetailsRepository> _repoMock = null!;
-        private PeopleFinderService _sut = null!;
+    private Mock<IAiPeopleInformationFinder> _aiMock = null;
+        private Mock<ISearchRequestDetailsRepository> _repoMock = null;
+        private PeopleFinderService _sut = null;
 
         [SetUp]
         public void SetUp()
@@ -30,11 +30,11 @@ public class PeopleFinderServiceTests
             {
                 SearchTerm = term,
                 Profile = new PersonProfile(
-                    Name: "Ada Lovelace",
-                    Company: "N/A",
-                    CurrentRole: "Mathematician",
-                    KeyFacts: new() { "Analytical Engine", "First programmer" },
-                    PastRolesCompanies: "—")
+                    "Ada Lovelace",
+                    "N/A",
+                    "Mathematician",
+                    ["Analytical Engine", "First programmer"],
+                    "—")
             };
 
             _repoMock
@@ -61,11 +61,11 @@ public class PeopleFinderServiceTests
             // arrange
             const string term = "Grace Hopper";
             var aiProfile = new PersonProfile(
-                Name: "Grace Hopper",
-                Company: "US Navy",
-                CurrentRole: "Rear Admiral",
-                KeyFacts: new() { "COBOL", "Compiler pioneer" },
-                PastRolesCompanies: "Harvard; UNIVAC");
+                "Grace Hopper",
+                "US Navy",
+                "Rear Admiral",
+                ["COBOL", "Compiler pioneer"],
+                "Harvard; UNIVAC");
 
             _repoMock
                 .Setup(r => r.GetBySearchTerm(term))
@@ -86,12 +86,12 @@ public class PeopleFinderServiceTests
 
             // assert
             Assert.That(result, Is.Not.Null);
-            Assert.That(result!.SearchTerm, Is.EqualTo(term));
+            Assert.That(result.SearchTerm, Is.EqualTo(term));
             Assert.That(result.Profile, Is.Not.Null);
-            Assert.That(result.Profile!.Name, Is.EqualTo("Grace Hopper"));
+            Assert.That(result.Profile.Name, Is.EqualTo("Grace Hopper"));
             
             Assert.That(saved, Is.Not.Null, "CreateOrUpdate is not called");
-            Assert.That(saved!.SearchTerm, Is.EqualTo(term));
+            Assert.That(saved.SearchTerm, Is.EqualTo(term));
             Assert.That(saved.Profile, Is.EqualTo(aiProfile));
 
             _repoMock.Verify(r => r.GetBySearchTerm(term), Times.Once);
@@ -127,11 +127,11 @@ public class PeopleFinderServiceTests
 
             // assert
             Assert.That(result, Is.Not.Null);
-            Assert.That(result!.SearchTerm, Is.EqualTo(term));
+            Assert.That(result.SearchTerm, Is.EqualTo(term));
             Assert.That(result.Profile, Is.Null, "Profile should be null, if AI does not find anything");
 
             Assert.That(saved, Is.Not.Null);
-            Assert.That(saved!.SearchTerm, Is.EqualTo(term));
+            Assert.That(saved.SearchTerm, Is.EqualTo(term));
             Assert.That(saved.Profile, Is.Null);
 
             _repoMock.Verify(r => r.GetBySearchTerm(term), Times.Once);
